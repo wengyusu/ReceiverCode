@@ -7,6 +7,10 @@ Compile cpp files
  How to run it:
  
  `$ sudo stdbuf -o0 ./pip_sense.v2 l l | stdbuf -o0 grep TX:03408`
+
+ Install Dependencies:
+ 
+ `pip3 install -r requirements.txt` or `pip install -r requirements.txt`
  
  ## Step2
  Activate HTTP Server
