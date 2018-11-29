@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts3 Ajax</title>
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
+    <!-- ECharts 3 引入 -->
+    <script src="http://echarts.baidu.com/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!--为ECharts准备一个具备大小（宽高）的Dom-->
+    <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+    
+    <script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+    
+    myChart.setOption({
+        title: {
+            text: 'PIPtag Monitor'
+        },
+        tooltip: {},
+        legend: {
+            data:['03408']
+        },
+        xAxis: {
+            data: [],
+            name: "Time"
+        },
+        yAxis: {
+            name: "Light"
+        },
+        series: [{
+            name: '03408',
+            type: 'line',
+            data: []
+        }]
+    });
+    
+    var time = ["","","","","","","","","",""],
+        tx03408 = [0,0,0,0,0,0,0,0,0,0]
+        
+
+    //准备好统一的 callback 函数
+    var update_mychart = function (res) { //res是json格式的response对象
+        
+        // 隐藏加载动画
+        myChart.hideLoading();
+        
+        // 准备数据
+        var date = new Date(parseInt(res['ts']));
+        time.push(date.toLocaleTimeString());
+        tx03408.push(parseFloat(res['light']));
+        if (time.length >= 10){
+            time.shift();
+            tx03408.shift();
+        }
+        
+        // 填入数据
+        myChart.setOption({
+            xAxis: {
+                data: time
+            },
+            series: [{
+                name: '03408', // 根据名字对应到相应的系列
+                data: tx03408
+            }]
+        });
+        
+    };
+    
+    // 首次显示加载动画
+    myChart.showLoading();
+//build socket connection, wait the server push data and use callback function to update the chart
+$(document).ready(function() {
+    namespace = '';
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    
+    socket.on('server_response', function(res) {
+        console.log(res);
+        data=JSON.parse(res);
+        if(data['tx'] == "03408")
+            update_mychart(JSON.parse(res));
+    });
+
+});
+
+</script>
+</body>
+</html>
