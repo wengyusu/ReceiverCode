@@ -11,12 +11,12 @@ Compile cpp files
  ## Step2
  Activate HTTP Server
  
- `$ sh ./flask_debug_sh
+ `$ sh ./flask_debug_sh`
  
  ## Step3
  Run fetch script
  
- `$ python3 fetch.py
+ `$ python3 fetch.py`
  
  ## Step4
  Go to `http://localhost:8000/hello`
